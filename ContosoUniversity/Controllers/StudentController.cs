@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
+using PagedList;
 
 namespace ContosoUniversity.Controllers
 {
@@ -16,15 +17,33 @@ namespace ContosoUniversity.Controllers
         private SchoolContext db = new SchoolContext();
 
         // GET: Student
-        public ActionResult Index(string sortOrder)
+        public ActionResult Index(string sort, string filter, string search, int? page)
         {
-            ViewBag.LastSortParm = String.IsNullOrEmpty(sortOrder) ? "last_desc" : "";
-            ViewBag.DateSortParm = sortOrder == "date" ? "date_desc" : "date";
-            ViewBag.FirstSortParm = sortOrder == "first" ? "first_desc" : "first";
+            ViewBag.CurrentSort = sort;
+            ViewBag.LastSort = String.IsNullOrEmpty(sort) ? "last_desc" : "";
+            ViewBag.DateSort = sort == "date" ? "date_desc" : "date";
+            ViewBag.FirstSort = sort == "first" ? "first_desc" : "first";
+
+            if (search != null)
+            {
+                page = 1;
+            }
+            else
+            {
+                search = filter;
+            }
+
+            ViewBag.Filter = search;
+
             var students = from s in db.Students
                            select s;
+            
+            if (!String.IsNullOrEmpty(search))
+            {
+                students = students.Where(s => s.LastName.ToUpper().Contains(search.ToUpper()) || s.FirstName.ToUpper().Contains(search.ToUpper()));
+            }
 
-            switch (sortOrder)
+            switch (sort)
             {
                 case "last_desc":
                     students = students.OrderByDescending(s => s.LastName);
@@ -45,7 +64,10 @@ namespace ContosoUniversity.Controllers
                     students = students.OrderBy(s => s.LastName);
                     break;
             }
-            return View(students.ToList());
+
+            int pageSize = 3;
+            int pageNumber = (page ?? 1);
+            return View(students.ToPagedList(pageNumber, pageSize));
         }
 
         // GET: Student/Details/5

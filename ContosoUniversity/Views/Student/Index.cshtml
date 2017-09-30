@@ -1,26 +1,35 @@
-﻿@model IEnumerable<ContosoUniversity.Models.Student>
+﻿@model PagedList.IPagedList<ContosoUniversity.Models.Student>
+@using PagedList.Mvc;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css" />
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Students";
 }
 
-<h2>Index</h2>
+<h2>Students</h2>
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.ActionLink(@Html.DisplayNameFor(model => model.LastName).ToString(), "Index", new { sortOrder = ViewBag.LastSortParm })
-        </th>
-        <th>
-            @Html.ActionLink(@Html.DisplayNameFor(model => model.FirstName).ToString(), "Index", new { sortOrder = ViewBag.FirstSortParm })
-        </th>
-        <th>
-            @Html.ActionLink(@Html.DisplayNameFor(model => model.EnrollmentDate).ToString(), "Index", new {  sortOrder = ViewBag.DateSortParm })
-        </th>   
-        <th></th>
-    </tr>
+
+@using (Html.BeginForm("Index", "Student", FormMethod.Get))
+{
+    <p>Find by name: @Html.TextBox("search", ViewBag.Search as string)
+    <input type="submit" value="Search" /></p>
+}
+
+    <table class="table">
+        <tr>
+            <th>
+                @Html.ActionLink("Last Name", "Index", new { sort = ViewBag.LastSort, filter = ViewBag.Filter })
+            </th>
+            <th>
+                @Html.ActionLink("First Name", "Index", new { sort = ViewBag.FirstSort, filter = ViewBag.Filter })
+            </th>
+            <th>
+                @Html.ActionLink("Enrollment Date", "Index", new { sort = ViewBag.DateSort, filter = ViewBag.Filter })
+            </th>   
+            <th></th>
+        </tr>
 
 @foreach (var item in Model) {
     <tr>
@@ -40,5 +49,10 @@
         </td>
     </tr>
 }
-
 </table>
+<br/>
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index",
+    new { page, sort = ViewBag.Current, filter = ViewBag.Filter }))
+
