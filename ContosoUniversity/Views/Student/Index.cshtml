@@ -5,22 +5,20 @@
 }
 
 <h2>Index</h2>
-<p class="alert-danger">@ViewBag.ErrorMessage</p>
-
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.LastName)
+            @Html.ActionLink(@Html.DisplayNameFor(model => model.LastName).ToString(), "Index", new { sortOrder = ViewBag.LastSortParm })
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.FirstName)
+            @Html.ActionLink(@Html.DisplayNameFor(model => model.FirstName).ToString(), "Index", new { sortOrder = ViewBag.FirstSortParm })
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.EnrollmentDate)
-        </th>
+            @Html.ActionLink(@Html.DisplayNameFor(model => model.EnrollmentDate).ToString(), "Index", new {  sortOrder = ViewBag.DateSortParm })
+        </th>   
         <th></th>
     </tr>
 
