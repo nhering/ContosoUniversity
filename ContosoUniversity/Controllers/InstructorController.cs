@@ -28,6 +28,8 @@ namespace ContosoUniversity.Controllers
             if (id != null)
             {
                 ViewBag.InstructorID = id.Value;
+                ViewBag.InstructorFullName = viewModel.Instructors.Where(
+                    n => n.ID == id.Value).Single().FullName;
                 viewModel.Courses = viewModel.Instructors.Where(
                     i => i.ID == id.Value).Single().Courses;
             }
@@ -35,6 +37,8 @@ namespace ContosoUniversity.Controllers
             if (courseID != null)
             {
                 ViewBag.CourseID = courseID.Value;
+                ViewBag.CourseTitle = viewModel.Courses.Where(
+                    c => c.CourseID == courseID).Single().Title;
                 viewModel.Enrollments = viewModel.Courses.Where(
                     x => x.CourseID == courseID).Single().Enrollments;
             }
