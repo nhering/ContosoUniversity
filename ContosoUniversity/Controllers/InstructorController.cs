@@ -20,6 +20,7 @@ namespace ContosoUniversity.Controllers
         public ActionResult Index(int? id, int? courseID)
         {
             var viewModel = new InstructorIndexData();
+
             viewModel.Instructors = db.Instructors
                 .Include(i => i.OfficeAssignment)
                 .Include(i => i.Courses.Select(c => c.Department))
@@ -39,8 +40,14 @@ namespace ContosoUniversity.Controllers
                 ViewBag.CourseID = courseID.Value;
                 ViewBag.CourseTitle = viewModel.Courses.Where(
                     c => c.CourseID == courseID).Single().Title;
-                viewModel.Enrollments = viewModel.Courses.Where(
-                    x => x.CourseID == courseID).Single().Enrollments;
+
+                var selectedCourse = viewModel.Courses.Where(x => x.CourseID == courseID).Single();
+                foreach (Enrollment enrollment in selectedCourse.Enrollments)
+                {
+                    db.Entry(enrollment).Reference(x => x.Student).Load();
+                }
+
+                viewModel.Enrollments = selectedCourse.Enrollments;
             }
 
             return View(viewModel);
